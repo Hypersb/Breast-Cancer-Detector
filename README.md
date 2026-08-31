@@ -1,59 +1,80 @@
-# Breast Cancer Detection
+# Breast Cancer Detector
 
-A portfolio-style machine learning project for classifying breast tumors as malignant or benign using the Wisconsin Breast Cancer dataset.
+A reproducible machine learning project for binary tumor classification using the Wisconsin Breast Cancer dataset.
 
-This project is educational in nature and is not a medical diagnostic tool.
+This repository demonstrates a complete end-to-end ML workflow: data cleaning, exploratory analysis, model selection, evaluation, artifact saving, and inference. It is intended for learning, experimentation, and portfolio use, not for clinical decision-making.
+
+## Project goals
+
+- Build a dependable binary classification pipeline for malignant vs. benign tumor prediction
+- Use a real tabular dataset and evaluate models with clinically meaningful metrics
+- Demonstrate a clean engineering workflow with tests, documentation, and CI
+- Present a portfolio-ready ML project with reproducible setup and transparent limitations
 
 ## Problem statement
 
-The goal is to build a reproducible binary classification workflow that predicts whether a tumor is malignant or benign using tabular medical features from the dataset.
+Breast cancer screening and classification require identifying patterns in diagnostic measurements from tumor cell nuclei. This project models that problem as a supervised binary classification task using structured numerical features.
 
-## Dataset overview
+## Dataset
 
-The dataset is already present in the workspace at `data/data.csv`.
+The project uses the Wisconsin Breast Cancer dataset stored in `data/data.csv`.
 
-### Verified dataset findings
+### Dataset characteristics
 
-Using the dataset as it exists in the workspace, we verified:
+- Rows: 569
+- Features: 30 numeric predictive features
+- Target: `diagnosis`
+- Classes: `B` (benign), `M` (malignant)
+- Missing values: 0
+- Duplicate rows: 0
 
-- Shape: `(569, 31)` after removing the empty trailing CSV column and the identifier column
-- Target column: `diagnosis`
-- Target classes: `B` and `M`
-- Class distribution:
-  - `B`: 357
-  - `M`: 212
-- Missing values: `0`
-- Duplicate rows: `0`
+The dataset is mildly imbalanced, with 357 benign samples and 212 malignant samples.
 
-The dataset is moderately imbalanced, with benign cases making up about 62.7% and malignant cases about 37.3%.
-
-## Project structure
+## Repository structure
 
 ```text
 breast cancer detector/
+├── .github/
+│   └── workflows/
+│       └── ci.yml
 ├── data/
 │   └── data.csv
+├── docs/
+│   └── data_dictionary.md
+├── models/
+│   └── best_model.pkl
 ├── notebooks/
-│   └── 01_data_understanding.ipynb
+│   ├── 01_data_understanding.ipynb
+│   ├── 02_eda.ipynb
+│   ├── 03_preprocessing.ipynb
+│   ├── 04_model_training.ipynb
+│   └── 05_model_evaluation.ipynb
+├── reports/
+│   ├── correlation_heatmap.png
+│   ├── diagnosis_distribution.png
+│   └── top_correlations.png
 ├── src/
 │   ├── eda.py
 │   ├── predict.py
 │   ├── preprocessing.py
 │   ├── train.py
 │   └── tune.py
-├── models/
-│   └── best_model.pkl
-├── reports/
-│   ├── correlation_heatmap.png
-│   ├── diagnosis_distribution.png
-│   └── top_correlations.png
+├── tests/
+│   ├── test_predict.py
+│   └── test_preprocessing.py
+├── .editorconfig
 ├── .gitignore
+├── Makefile
+├── MODEL_CARD.md
 ├── README.md
+├── pyproject.toml
 ├── requirements.txt
 └── .venv/
 ```
 
-## Environment setup
+## Setup
+
+### Option 1: Standard Python environment
 
 ```bash
 python -m venv .venv
@@ -63,41 +84,45 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-## Run the workflow
+### Option 2: Makefile workflow
 
 ```bash
-# dataset inspection / cleaning validation
+make install
+```
+
+## Run the project
+
+```bash
 python src/preprocessing.py
-
-# exploratory data analysis
 python src/eda.py
-
-# baseline model comparison
 python src/train.py
-
-# tuned model search
 python src/tune.py
-
-# example prediction
 python src/predict.py
+```
+
+or
+
+```bash
+make train
+make eda
+make predict
 ```
 
 ## Methodology
 
-1. Load and inspect the dataset
-2. Remove the empty trailing CSV column and ID field
-3. Check target distribution and class balance
-4. Perform EDA and visualize the key relationships
-5. Split the data into train and test sets with stratification
+1. Load the raw dataset and validate the schema
+2. Drop non-feature metadata columns such as the identifier and empty trailing columns
+3. Inspect class balance and target distribution
+4. Conduct exploratory data analysis with visual summaries
+5. Split data into train and test sets using stratification
 6. Train several classification models
-7. Compare models using accuracy, precision, recall, F1, confusion matrix, and ROC-AUC
-8. Tune promising models with focused GridSearchCV
-9. Save the best-performing pipeline
-10. Use the saved model for inference
+7. Evaluate on accuracy, precision, recall, F1-score, confusion matrix, and ROC-AUC
+8. Save the best-performing model artifact
+9. Reuse the model for inference through a prediction pipeline
 
-## Baseline model results
+## Model evaluation
 
-These results were produced from verified runs on the actual dataset in this workspace.
+The project evaluates multiple baseline classifiers. Verified results from this repo are shown below.
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---:|---:|---:|---:|---:|
@@ -107,40 +132,62 @@ These results were produced from verified runs on the actual dataset in this wor
 | Random Forest | 0.9649 | 1.0000 | 0.9048 | 0.9500 | 0.9942 |
 | Gradient Boosting | 0.9649 | 1.0000 | 0.9048 | 0.9500 | 0.9947 |
 
-The best baseline model on the verified runs was logistic regression based on ROC-AUC and F1 performance.
+### Best model
 
-## Model tuning
+The best verified model is the logistic regression pipeline.
 
-The project includes a tuning workflow in `src/tune.py` using `GridSearchCV` for the strongest candidates.
+- Accuracy: 0.9649
+- Precision: 0.9750
+- Recall: 0.9286
+- F1-score: 0.9512
+- ROC-AUC: 0.9960
 
-The tuning step is intentionally focused and uses a small search space to avoid unnecessary complexity while keeping the validation process reproducible.
+The model artifact is saved in `models/best_model.pkl`.
 
-## Prediction pipeline
+## Testing and validation
 
-The saved best model can be used via `src/predict.py`.
+This repository includes automated tests for preprocessing and prediction flows.
 
-This script loads the trained model and makes predictions from a feature dictionary representing a single tumor observation.
+```bash
+pytest -q
+```
 
-## Important note
+CI is configured in `.github/workflows/ci.yml` to run on pushes and pull requests.
 
-This project is designed as a machine-learning and portfolio exercise. It is not a medical diagnostic system and should not be used to make real clinical decisions.
+## Model card and documentation
 
-## Technologies used
+For project-level context, see:
+
+- [MODEL_CARD.md](MODEL_CARD.md)
+- [docs/data_dictionary.md](docs/data_dictionary.md)
+
+## Key considerations
+
+- This project is a learning and portfolio ML application.
+- It should not be used as a clinical diagnostic system.
+- The model is trained on a benchmark dataset and may not generalize beyond that distribution.
+
+## Technologies
 
 - Python
 - pandas
-- numpy
+- NumPy
 - matplotlib
 - seaborn
 - scikit-learn
 - joblib
 - Jupyter
-- Git / GitHub
+- GitHub Actions
+- pytest
 
 ## Future improvements
 
-- Add more notebooks for preprocessing, feature engineering, and model interpretation
-- Add cross-validation comparison across more models
-- Generate feature-importance plots for the final model
-- Add a small command-line interface for batch prediction
-- Improve documentation and experiment tracking
+- Add feature-importance and explainability analysis
+- Add model version tracking and experiment logging
+- Create a lightweight CLI or REST API for inference
+- Expand notebook coverage for feature engineering and validation
+- Add more production-style monitoring and deployment scaffolding
+
+## License
+
+This project is intended for educational and portfolio use. Add a formal license if you plan to distribute it beyond personal or portfolio contexts.

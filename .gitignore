@@ -7,6 +7,7 @@ __pycache__/
 .pytest_cache/
 train_output.txt
 predict_output.txt
+train_clean.txt
 
 # Jupyter
 *.nbconvert.ipynb
