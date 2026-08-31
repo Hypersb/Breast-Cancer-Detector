@@ -2,11 +2,17 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from src.preprocessing import clean_dataset, load_dataset
+try:
+    from src.preprocessing import clean_dataset, load_dataset
+except ModuleNotFoundError:  # pragma: no cover
+    from preprocessing import clean_dataset, load_dataset
 
 
 def summarize_target(df: pd.DataFrame) -> pd.Series:
@@ -16,14 +22,14 @@ def summarize_target(df: pd.DataFrame) -> pd.Series:
 def plot_diagnosis_distribution(df: pd.DataFrame, save_path: str | Path | None = None) -> None:
     value_counts = df["diagnosis"].value_counts()
     plt.figure(figsize=(6, 4))
-    sns.barplot(x=value_counts.index, y=value_counts.values, palette=["#45aaf2", "#ff6b6b"])
+    sns.barplot(data=pd.DataFrame({"diagnosis": value_counts.index, "count": value_counts.values}), x="diagnosis", y="count", hue="diagnosis", palette=["#45aaf2", "#ff6b6b"], dodge=False, legend=False)
     plt.title("Diagnosis distribution")
     plt.xlabel("Diagnosis")
     plt.ylabel("Count")
     plt.tight_layout()
     if save_path is not None:
         plt.savefig(save_path, dpi=200)
-    plt.show()
+    plt.show(block=False)
 
 
 def plot_top_correlations(df: pd.DataFrame, save_path: str | Path | None = None) -> None:
@@ -32,14 +38,14 @@ def plot_top_correlations(df: pd.DataFrame, save_path: str | Path | None = None)
     top = corr.head(10)
 
     plt.figure(figsize=(10, 6))
-    sns.barplot(x=top.values, y=top.index, palette="viridis")
+    sns.barplot(data=pd.DataFrame({"feature": top.index, "corr": top.values}), x="corr", y="feature", hue="feature", palette="viridis", dodge=False, legend=False)
     plt.title("Top 10 feature correlations with diagnosis")
     plt.xlabel("Correlation with diagnosis")
     plt.ylabel("Feature")
     plt.tight_layout()
     if save_path is not None:
         plt.savefig(save_path, dpi=200)
-    plt.show()
+    plt.show(block=False)
 
 
 def plot_correlation_heatmap(df: pd.DataFrame, save_path: str | Path | None = None) -> None:
@@ -56,7 +62,7 @@ def plot_correlation_heatmap(df: pd.DataFrame, save_path: str | Path | None = No
     plt.tight_layout()
     if save_path is not None:
         plt.savefig(save_path, dpi=200)
-    plt.show()
+    plt.show(block=False)
 
 
 def main() -> None:
