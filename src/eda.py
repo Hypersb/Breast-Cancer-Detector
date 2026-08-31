@@ -1,0 +1,76 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+from preprocessing import clean_dataset, load_dataset
+
+
+def summarize_target(df: pd.DataFrame) -> pd.Series:
+    return df["diagnosis"].value_counts(normalize=True).sort_index()
+
+
+def plot_diagnosis_distribution(df: pd.DataFrame, save_path: str | Path | None = None) -> None:
+    value_counts = df["diagnosis"].value_counts()
+    plt.figure(figsize=(6, 4))
+    sns.barplot(x=value_counts.index, y=value_counts.values, palette=["#45aaf2", "#ff6b6b"])
+    plt.title("Diagnosis distribution")
+    plt.xlabel("Diagnosis")
+    plt.ylabel("Count")
+    plt.tight_layout()
+    if save_path is not None:
+        plt.savefig(save_path, dpi=200)
+    plt.show()
+
+
+def plot_top_correlations(df: pd.DataFrame, save_path: str | Path | None = None) -> None:
+    X = df.drop(columns=["diagnosis"])
+    corr = X.corrwith(df["diagnosis"].map({"B": 0, "M": 1})).sort_values(ascending=False)
+    top = corr.head(10)
+
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x=top.values, y=top.index, palette="viridis")
+    plt.title("Top 10 feature correlations with diagnosis")
+    plt.xlabel("Correlation with diagnosis")
+    plt.ylabel("Feature")
+    plt.tight_layout()
+    if save_path is not None:
+        plt.savefig(save_path, dpi=200)
+    plt.show()
+
+
+def plot_correlation_heatmap(df: pd.DataFrame, save_path: str | Path | None = None) -> None:
+    target_map = {"B": 0, "M": 1}
+    encoded = df.copy()
+    encoded["diagnosis"] = encoded["diagnosis"].map(target_map)
+    corr = encoded.corr(numeric_only=True)
+    selected = corr["diagnosis"].abs().sort_values(ascending=False).head(10).index
+    subset = encoded[selected].corr()
+
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(subset, annot=True, cmap="coolwarm", fmt=".2f", linewidths=0.5)
+    plt.title("Correlation heatmap for top diagnostic features")
+    plt.tight_layout()
+    if save_path is not None:
+        plt.savefig(save_path, dpi=200)
+    plt.show()
+
+
+def main() -> None:
+    data_path = Path(__file__).resolve().parents[1] / "data" / "data.csv"
+    df = clean_dataset(load_dataset(data_path))
+    print("Dataset shape:", df.shape)
+    print("Target distribution:\n", summarize_target(df))
+    print("Missing values:\n", df.isna().sum().sum())
+    print("Duplicates:", int(df.duplicated().sum()))
+
+    plot_diagnosis_distribution(df, save_path=Path(__file__).resolve().parents[1] / "reports" / "diagnosis_distribution.png")
+    plot_top_correlations(df, save_path=Path(__file__).resolve().parents[1] / "reports" / "top_correlations.png")
+    plot_correlation_heatmap(df, save_path=Path(__file__).resolve().parents[1] / "reports" / "correlation_heatmap.png")
+
+
+if __name__ == "__main__":
+    main()
