@@ -3,7 +3,6 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 .DS_Store
-*.pkl
 .mypy_cache/
 .pytest_cache/
 
@@ -12,3 +11,7 @@ __pycache__/
 
 # IDE
 .vscode/
+
+# Allow tracked model artifact
+!models/
+!models/*.pkl
