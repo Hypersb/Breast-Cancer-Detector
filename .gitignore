@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+*.pkl
+.mypy_cache/
+.pytest_cache/
+
+# Jupyter
+*.nbconvert.ipynb
+
+# IDE
+.vscode/
