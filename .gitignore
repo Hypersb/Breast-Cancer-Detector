@@ -5,6 +5,8 @@ __pycache__/
 .DS_Store
 .mypy_cache/
 .pytest_cache/
+train_output.txt
+predict_output.txt
 
 # Jupyter
 *.nbconvert.ipynb
