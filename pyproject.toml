@@ -7,15 +7,15 @@ name = "breast-cancer-detector"
 version = "0.1.0"
 description = "Breast cancer classification project for malignant vs. benign tumor detection."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 authors = [{ name = "Your Name" }]
 license = { text = "MIT" }
 dependencies = [
-    "pandas==3.0.5",
-    "numpy==2.5.2",
+    "pandas==2.2.3",
+    "numpy==2.4.6",
     "matplotlib==3.11.1",
     "seaborn==0.13.2",
-    "scikit-learn==1.9.0",
+    "scikit-learn==1.5.2",
     "jupyter==1.1.1",
     "joblib==1.5.3",
 ]
