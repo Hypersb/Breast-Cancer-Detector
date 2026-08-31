@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from preprocessing import clean_dataset, load_dataset
+from src.preprocessing import clean_dataset, load_dataset
 
 
 def summarize_target(df: pd.DataFrame) -> pd.Series:
@@ -60,16 +60,20 @@ def plot_correlation_heatmap(df: pd.DataFrame, save_path: str | Path | None = No
 
 
 def main() -> None:
-    data_path = Path(__file__).resolve().parents[1] / "data" / "data.csv"
+    project_root = Path(__file__).resolve().parents[1]
+    reports_dir = project_root / "reports"
+    reports_dir.mkdir(exist_ok=True)
+
+    data_path = project_root / "data" / "data.csv"
     df = clean_dataset(load_dataset(data_path))
     print("Dataset shape:", df.shape)
     print("Target distribution:\n", summarize_target(df))
     print("Missing values:\n", df.isna().sum().sum())
     print("Duplicates:", int(df.duplicated().sum()))
 
-    plot_diagnosis_distribution(df, save_path=Path(__file__).resolve().parents[1] / "reports" / "diagnosis_distribution.png")
-    plot_top_correlations(df, save_path=Path(__file__).resolve().parents[1] / "reports" / "top_correlations.png")
-    plot_correlation_heatmap(df, save_path=Path(__file__).resolve().parents[1] / "reports" / "correlation_heatmap.png")
+    plot_diagnosis_distribution(df, save_path=reports_dir / "diagnosis_distribution.png")
+    plot_top_correlations(df, save_path=reports_dir / "top_correlations.png")
+    plot_correlation_heatmap(df, save_path=reports_dir / "correlation_heatmap.png")
 
 
 if __name__ == "__main__":
