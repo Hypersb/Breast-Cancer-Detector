@@ -1,39 +1,55 @@
-# Breast Cancer Detector
+# Breast Cancer Detection using Machine Learning
 
-A reproducible machine learning project for binary tumor classification using the Wisconsin Breast Cancer dataset.
+This repository contains a reproducible binary classification project for distinguishing benign and malignant breast cancer diagnoses from tabular diagnostic measurements. It is designed as a portfolio-ready machine learning project for education, experimentation, and internship applications.
 
-This repository demonstrates a complete end-to-end ML workflow: data cleaning, exploratory analysis, model selection, evaluation, artifact saving, and inference. It is intended for learning, experimentation, and portfolio use, not for clinical decision-making.
+## Project Overview
 
-## Project goals
+The workflow includes dataset validation, feature cleaning, exploratory data analysis, model benchmarking, model selection, and inference using a serialized artifact. The project emphasizes reproducibility, transparent documentation, and a clean engineering workflow.
 
-- Build a dependable binary classification pipeline for malignant vs. benign tumor prediction
-- Use a real tabular dataset and evaluate models with clinically meaningful metrics
-- Demonstrate a clean engineering workflow with tests, documentation, and CI
-- Present a portfolio-ready ML project with reproducible setup and transparent limitations
+## Problem Statement
 
-## Problem statement
-
-Breast cancer screening and classification require identifying patterns in diagnostic measurements from tumor cell nuclei. This project models that problem as a supervised binary classification task using structured numerical features.
+Breast cancer diagnosis can be framed as a supervised binary classification problem using quantitative measurements from digitized breast mass images. This project trains a model to predict whether a tumor is likely benign or malignant based on the provided feature set.
 
 ## Dataset
 
-The project uses the Wisconsin Breast Cancer dataset stored in `data/data.csv`.
+This project uses the Wisconsin Diagnostic Breast Cancer (WDBC) dataset stored in `data/data.csv`.
 
-### Dataset characteristics
+### Verified characteristics
 
-- Rows: 569
-- Features: 30 numeric predictive features
-- Target: `diagnosis`
-- Classes: `B` (benign), `M` (malignant)
-- Missing values: 0
-- Duplicate rows: 0
+- Dataset name: Wisconsin Diagnostic Breast Cancer (WDBC)
+- Creator/source: William H. Wolberg, W. Nick Street, and Olvi L. Mangasarian, along with the broader UCI Machine Learning Repository dataset curation effort
+- Source repository: UCI Machine Learning Repository (widely distributed in scikit-learn and public ML benchmarks)
+- Observations: 569
+- Feature count: 30 numeric predictors
+- Target variable: `diagnosis`
+- Target classes: `B` = benign, `M` = malignant
+- Data quality: no missing values in the shipped CSV, and the dataset includes a non-feature identifier column (`id`) that is removed during cleaning
 
-The dataset is mildly imbalanced, with 357 benign samples and 212 malignant samples.
+The dataset in this repository is consistent with the standard WDBC tabular dataset used in many public machine learning examples and educational materials.
 
-## Repository structure
+### Citation and usage note
+
+A standard citation for the dataset is:
+
+> Wolberg, W.H., Street, W.N., and Mangasarian, O.L. (1995). Breast cancer Wisconsin (diagnostic) data set. UCI Machine Learning Repository.
+
+The source code in this repository is MIT-licensed, but the dataset itself is not re-licensed by this project. Please review the original repository or dataset source for dataset-specific usage terms before reusing it in another context.
+
+## ML Pipeline
+
+1. Load and validate the raw CSV
+2. Remove non-feature metadata columns such as `id` and empty trailing columns
+3. Standardize/prepare feature matrices for modeling
+4. Split data into training and test sets with stratification
+5. Train several baseline classifiers
+6. Evaluate metrics such as accuracy, precision, recall, F1-score, confusion matrix, and ROC-AUC
+7. Save the best-scoring model artifact to `models/best_model.pkl`
+8. Use the model for inference via `src/predict.py`
+
+## Repository Structure
 
 ```text
-breast cancer detector/
+breast-cancer-detector/
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
@@ -64,65 +80,18 @@ breast cancer detector/
 │   └── test_preprocessing.py
 ├── .editorconfig
 ├── .gitignore
+├── LICENSE
 ├── Makefile
 ├── MODEL_CARD.md
 ├── README.md
 ├── pyproject.toml
 ├── requirements.txt
-└── .venv/
+└── train_clean.txt
 ```
 
-## Setup
+## Models Evaluated
 
-### Option 1: Standard Python environment
-
-```bash
-python -m venv .venv
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### Option 2: Makefile workflow
-
-```bash
-make install
-```
-
-## Run the project
-
-```bash
-python src/preprocessing.py
-python src/eda.py
-python src/train.py
-python src/tune.py
-python src/predict.py
-```
-
-or
-
-```bash
-make train
-make eda
-make predict
-```
-
-## Methodology
-
-1. Load the raw dataset and validate the schema
-2. Drop non-feature metadata columns such as the identifier and empty trailing columns
-3. Inspect class balance and target distribution
-4. Conduct exploratory data analysis with visual summaries
-5. Split data into train and test sets using stratification
-6. Train several classification models
-7. Evaluate on accuracy, precision, recall, F1-score, confusion matrix, and ROC-AUC
-8. Save the best-performing model artifact
-9. Reuse the model for inference through a prediction pipeline
-
-## Model evaluation
-
-The project evaluates multiple baseline classifiers. Verified results from this repo are shown below.
+The project compares multiple classifiers and records validation metrics on the held-out test set.
 
 | Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
 |---|---:|---:|---:|---:|---:|
@@ -132,9 +101,20 @@ The project evaluates multiple baseline classifiers. Verified results from this 
 | Random Forest | 0.9649 | 1.0000 | 0.9048 | 0.9500 | 0.9942 |
 | Gradient Boosting | 0.9649 | 1.0000 | 0.9048 | 0.9500 | 0.9947 |
 
-### Best model
+## Evaluation Metrics
 
-The best verified model is the logistic regression pipeline.
+The project uses standard binary classification metrics:
+
+- Accuracy
+- Precision
+- Recall
+- F1-score
+- ROC-AUC
+- Confusion matrix
+
+## Results
+
+The best verified model in this repository is a logistic regression pipeline trained with a standard scaler.
 
 - Accuracy: 0.9649
 - Precision: 0.9750
@@ -142,52 +122,94 @@ The best verified model is the logistic regression pipeline.
 - F1-score: 0.9512
 - ROC-AUC: 0.9960
 
-The model artifact is saved in `models/best_model.pkl`.
+The trained model artifact is saved at `models/best_model.pkl`.
 
-## Testing and validation
+> Compatibility note: the serialized model was created with scikit-learn 1.5.2. The project dependencies are pinned to this version to reduce compatibility issues with the saved artifact.
 
-This repository includes automated tests for preprocessing and prediction flows.
+## Installation
+
+### Option 1: Create a virtual environment
 
 ```bash
-pytest -q
+python -m venv .venv
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 ```
 
-CI is configured in `.github/workflows/ci.yml` to run on pushes and pull requests.
+### Option 2: Use the included Makefile
 
-## Model card and documentation
+```bash
+make install
+```
 
-For project-level context, see:
+## Usage
 
-- [MODEL_CARD.md](MODEL_CARD.md)
-- [docs/data_dictionary.md](docs/data_dictionary.md)
+Run the project modules from the repository root:
 
-## Key considerations
+```bash
+python src/preprocessing.py
+python src/eda.py
+python src/train.py
+python src/tune.py
+python src/predict.py
+```
 
-- This project is a learning and portfolio ML application.
-- It should not be used as a clinical diagnostic system.
-- The model is trained on a benchmark dataset and may not generalize beyond that distribution.
+You can also use the Make targets:
 
-## Technologies
+```bash
+make train
+make eda
+make predict
+```
 
-- Python
-- pandas
-- NumPy
-- matplotlib
-- seaborn
-- scikit-learn
-- joblib
-- Jupyter
-- GitHub Actions
-- pytest
+## Running Predictions
 
-## Future improvements
+```bash
+python src/predict.py
+```
 
-- Add feature-importance and explainability analysis
-- Add model version tracking and experiment logging
-- Create a lightweight CLI or REST API for inference
-- Expand notebook coverage for feature engineering and validation
-- Add more production-style monitoring and deployment scaffolding
+The prediction script loads the saved model and returns a probabilistic classification for a sample record built from the dataset features.
+
+## Running Tests
+
+```bash
+pytest -v
+```
+
+The project includes automated checks for preprocessing and prediction behavior.
+
+## Reproducibility
+
+This project is designed to be reproducible with a locked dependency set. The key compatibility requirement is:
+
+- scikit-learn == 1.5.2
+- Python >= 3.10 and < 3.14
+
+This keeps the saved model artifact and training pipeline consistent with one another.
+
+## Limitations
+
+- The project is intended for educational and portfolio use.
+- It is not a medical diagnostic system.
+- The model is trained on a benchmark dataset and may not generalize to all populations or clinical settings.
+- Predictions should not replace professional medical review or clinical decision-making.
+
+## Ethical / Medical Disclaimer
+
+This project is for educational and research purposes only and is not a medical diagnostic system. Predictions should not be used for clinical decision-making.
+
+## Future Improvements
+
+- Add feature importance and model explainability analysis
+- Add experiment tracking and model versioning
+- Extend the project with a simple API or CLI
+- Improve notebook-based analysis and reporting
+- Add more rigorous validation for deployment-oriented workflows
 
 ## License
 
-This project is intended for educational and portfolio use. Add a formal license if you plan to distribute it beyond personal or portfolio contexts.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+
+The dataset used in this project remains subject to its respective original licensing and usage terms. The project source code and the dataset are distinct intellectual property domains and should be handled separately.

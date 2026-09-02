@@ -5,14 +5,26 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "breast-cancer-detector"
 version = "0.1.0"
-description = "Breast cancer classification project for malignant vs. benign tumor detection."
+description = "Educational breast cancer classification project using the Wisconsin Diagnostic Breast Cancer dataset."
 readme = "README.md"
-requires-python = ">=3.11"
-authors = [{ name = "Your Name" }]
+requires-python = ">=3.10,<3.14"
+authors = [{ name = "Subhanjan Bikram K C" }]
 license = { text = "MIT" }
+keywords = ["breast cancer", "machine learning", "classification", "scikit-learn", "healthcare"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "pandas==2.2.3",
-    "numpy==2.4.6",
+    "numpy==1.26.4",
     "matplotlib==3.11.1",
     "seaborn==0.13.2",
     "scikit-learn==1.5.2",

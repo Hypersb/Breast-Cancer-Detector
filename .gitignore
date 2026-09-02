@@ -1,20 +1,39 @@
+# Virtual environments
 .venv/
+venv/
 .venv*/
+ENV/
+env/
+
+# Python cache and build artifacts
 __pycache__/
-*.pyc
-.ipynb_checkpoints/
-.DS_Store
-.mypy_cache/
+*.py[cod]
+*.pyo
+*.pyd
 .pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+*.nbconvert.ipynb
+
+# Environment files
+.env
+.env.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Local generated outputs
 train_output.txt
 predict_output.txt
 train_clean.txt
-
-# Jupyter
-*.nbconvert.ipynb
-
-# IDE
-.vscode/
 
 # Allow tracked model artifact
 !models/
